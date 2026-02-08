@@ -1,0 +1,22 @@
+services:
+  text-embeddings-inference:
+    build:
+      context: .
+      dockerfile: Dockerfile.synology
+    image: text-embeddings-inference:latest
+    container_name: text-embeddings-inference
+    restart: always
+    ports:
+      - "11434:80"
+    volumes:
+      - embeddings_cache:/root/.cache/huggingface
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  embeddings_cache:
+    name: embeddings_cache
