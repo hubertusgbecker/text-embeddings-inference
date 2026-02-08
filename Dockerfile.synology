@@ -2,11 +2,13 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
-    pip install --no-cache-dir sentence-transformers flask
+RUN apt-get update && apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir sentence-transformers flask gunicorn
 
 COPY server.py .
 
 EXPOSE 80
 
-CMD ["python", "server.py"]
+CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:80", "--timeout", "120", "server:app"]
