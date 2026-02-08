@@ -8,15 +8,23 @@ services:
     restart: always
     ports:
       - "11434:80"
+      - "11435:80"
     volumes:
       - embeddings_cache:/root/.cache/huggingface
+    networks:
+      - default
+      - litellm_default
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 60s
+      start_period: 120s
 
 volumes:
   embeddings_cache:
     name: embeddings_cache
+
+networks:
+  litellm_default:
+    external: true
