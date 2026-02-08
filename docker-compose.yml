@@ -8,6 +8,7 @@ services:
     restart: always
     ports:
       - "11434:80"
+      - "11435:80"
     volumes:
       - embeddings_cache:/root/.cache/huggingface
     networks:
@@ -19,29 +20,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 120s
-
-  text-embeddings-inference-wrapper:
-    build:
-      context: ./wrapper
-      dockerfile: Dockerfile
-    image: text-embeddings-inference-wrapper:latest
-    container_name: text-embeddings-inference-wrapper
-    restart: always
-    ports:
-      - "11435:80"
-    environment:
-      - BACKEND_URL=http://text-embeddings-inference:80
-    depends_on:
-      text-embeddings-inference:
-        condition: service_healthy
-    networks:
-      - default
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
 
 volumes:
   embeddings_cache:
